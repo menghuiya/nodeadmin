@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>用户列表</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <!-- 所有的 css & js 资源 -->
+    <link
+      rel="stylesheet"
+      href="/public/static/kj/element-ui/theme-chalk/index.css"
+    />
+    <link rel="stylesheet" href="/public/static/sa.css" />
+    <script src="/public/static/kj/vue.min.js"></script>
+    <script src="/public/static/kj/element-ui/index.js"></script>
+    <script src="/public/static/kj/jquery.min.js"></script>
+    <script src="/public/static/kj/layer/layer.js"></script>
+    <script src="/public/static/sa.js"></script>
+  </head>
+  <body>
+    <!-- 防止margin向下击穿 -->
+    <div style="margin-top: -1em;"><br /></div>
+    <div class="vue-box" style="display: none;" :style="'display: block;'">
+      <div class="c-panel">
+        <!-- 参数栏 -->
+        <div class="c-title">用户列表</div>
+        <!-- <div class="c-title">数据列表</div> -->
+        <el-table :data="dataList" size="mini">
+          <el-table-column label="昵称" prop="username" width="200px">
+            <template slot-scope="s">
+              <div style="float: left; width: 130px; line-height: 20px;">
+                <b>$$s.row.username$$</b>
+                <p style="color: rgb(95, 156, 80);">$$s.row.role$$</p>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column label="性别" prop="sex"> </el-table-column>
+          <el-table-column label="注册于" prop="create_time"></el-table-column>
+          <el-table-column label="状态">
+            <template slot-scope="s">
+              <el-switch
+                v-model="s.row.status"
+                :active-value="1"
+                :inactive-value="0"
+                inactive-color="#ff4949"
+                @change="statuUser(s.row)"
+              ></el-switch>
+              <b style="color: green;" v-if="s.row.status == 1">正常</b>
+              <b style="color: red;" v-if="s.row.status == 0">禁用</b>
+            </template>
+          </el-table-column>
+          <el-table-column prop="address" label="操作">
+            <template slot-scope="s">
+              <el-button
+                class="c-btn"
+                type="success"
+                icon="el-icon-view"
+                @click="update(s.row)"
+                >编辑</el-button
+              >
+              <el-button
+                class="c-btn"
+                type="danger"
+                icon="el-icon-delete"
+                @click="del(s.row)"
+                >删除</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+        <!-- 分页 -->
+        <div class="page-box">
+          <el-pagination
+            background
+            layout="total, prev, pager, next, sizes, jumper"
+            :current-page.sync="p.pageNo"
+            :page-size.sync="p.pageSize"
+            :total="dataCount"
+            :page-sizes="[1, 10, 20, 30, 40, 50, 100]"
+            @current-change="f5(true)"
+            @size-change="f5(true)"
+          >
+          </el-pagination>
+        </div>
+      </div>
+      <!-- 给layer打一波广告 -->
+      <div class="c-panel" style="background-color: rgba(0, 0, 0, 0);">
+        layer：<el-link
+          type="primary"
+          href="http://layer.layui.com/"
+          target="_blank"
+        >
+          一个可以让你想到即可做到的JavaScript弹窗（层）解决方案
+        </el-link>
+      </div>
+    </div>
+    <!-- <script src="/public/monidata/user/data-list.js"></script> -->
+    <script type="text/javascript">
+      sa.checkAuth(true);
+      var app = new Vue({
+        el: '.vue-box',
+        delimiters: ['$$', '$$'],
+        data: {
+          p: {
+            // 查询参数
+            id: '',
+            username: '',
+            create_type: 0,
+            sort_type: 1,
+            start_time:
+              new Date().getFullYear() +
+              '-' +
+              (new Date().getMonth() + 1) +
+              '-1', // 本月一号
+            end_time:
+              new Date().getFullYear() +
+              '-' +
+              (new Date().getMonth() + 1) +
+              '-' +
+              new Date().getDate(), // 本月当日
+            pageNo: 1,
+            pageSize: 10,
+          },
+          dataCount: 1422,
+          dataList: [],
+        },
+        methods: {
+          // 数据刷新
+          f5: function () {
+            sa.ajax(
+              '/api/users',
+              this.p,
+              function (res) {
+                this.dataList = res.data; // 数据
+                this.dataCount = res.dataCount; // 分页
+              }.bind(this),
+              { type: 'get' }
+            );
+          },
+          // 删除
+          del: function (data) {
+            sa.confirm(
+              '是否删除，此操作不可撤销',
+              function () {
+                sa.ajax(
+                  '/admin/sa-html/user/user-delete?user_id=' + data._id,
+                  function (res) {
+                    sa.alert('成功提示：' + res.msg, function () {
+                      app.f5();
+                    });
+                  }.bind(this),
+                  { type: 'get' }
+                );
+              }.bind(this)
+            );
+          },
+          // 查看
+          update: function (data) {
+            sa.showIframe(
+              '用户修改',
+              'user-edit?user_id=' + data._id,
+              '500px',
+              '400px'
+            );
+          },
+          statuUser: function (data) {
+            // if (data.status) {
+            //   console.log('已开启');
+            // } else {
+            //   console.log('已关闭');
+            // }
+            let status = {
+              status: data.status,
+            };
+            sa.ajax(
+              '/admin/users_statu?user_id=' + data._id,
+              status,
+              function (res) {
+                sa.alert('成功提示：' + res.msg, function () {
+                  app.f5();
+                });
+              }.bind(this)
+            );
+          },
+        },
+        created: function () {
+          this.f5();
+        },
+      });
+    </script>
+  </body>
+</html>

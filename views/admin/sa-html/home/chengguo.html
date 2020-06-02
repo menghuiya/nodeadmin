@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>各种查询参数示例</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <!-- 所有的 css & js 资源 -->
+    <link
+      rel="stylesheet"
+      href="/public/static/kj/element-ui/theme-chalk/index.css"
+    />
+    <link rel="stylesheet" href="/public/static/sa.css" />
+    <script src="/public/static/kj/vue.min.js"></script>
+    <script src="/public/static/kj/element-ui/index.js"></script>
+    <script src="/public/static/kj/jquery.min.js"></script>
+    <script src="/public/static/kj/layer/layer.js"></script>
+    <script src="/public/static/sa.js"></script>
+    <style>
+      .td-img {
+        width: 180px;
+        height: 90px;
+        cursor: pointer;
+        vertical-align: middle;
+      }
+      .c-panel-add .td-img {
+        width: 200px;
+      }
+      .c-panel-add .el-form .el-input {
+        width: 200px;
+      }
+      .avatar-uploader .el-upload {
+        border: 1px dashed #d9d9d9;
+        border-radius: 6px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+      }
+      .avatar-uploader .el-upload:hover {
+        border-color: #409eff;
+      }
+      .avatar-uploader-icon {
+        font-size: 28px;
+        color: #8c939d;
+        width: 500px;
+        height: 200px;
+        line-height: 178px;
+        text-align: center;
+      }
+      .avatar {
+        width: 500px;
+        height: 200px;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 防止margin向下击穿 -->
+    <div style="margin-top: -1em;"><br /></div>
+    <div class="vue-box" style="display: none;" :style="'display: block;'">
+      <div class="c-panel">
+        <!-- 数据栏 -->
+        <div class="c-title">数据列表</div>
+        <el-table :data="dataList" size="mini">
+          <el-table-column prop="id" label="编号" width="70px">
+          </el-table-column>
+          <el-table-column label="图片" width="300px">
+            <template slot-scope="s">
+              <img
+                :src="s.row.img_src"
+                class="td-img"
+                title="点击预览"
+                @click="sa.showImage(s.row.img_src)"
+              />
+              <span style="color: #666; padding-left: 0.5em;"> 点击预览</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="标题" width="150px">
+            <template slot-scope="s">
+              <el-input
+                size="mini"
+                v-model="s.row.title"
+                @input="s.row.is_update=true"
+              ></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column label="链接" width="150px">
+            <template slot-scope="s">
+              <el-input
+                size="mini"
+                v-model="s.row.link"
+                @input="s.row.is_update=true"
+              ></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column label="内容">
+            <template slot-scope="s">
+              <el-input
+                size="medium"
+                type="textarea"
+                v-model="s.row.content"
+                @input="s.row.is_update=true"
+              ></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作">
+            <template slot-scope="s">
+              <el-badge
+                is-dot
+                class="item"
+                :is-dot="s.row.is_update"
+                style="margin: 5px 0;"
+              >
+                <el-button
+                  class="c-btn"
+                  type="primary"
+                  icon="el-icon-edit"
+                  @click="update(s.row)"
+                  >修改</el-button
+                >
+              </el-badge>
+              <el-badge
+                is-dot
+                class="item"
+                :is-dot="false"
+                style="margin: 5px 0;"
+              >
+                <el-button
+                  class="c-btn"
+                  type="danger"
+                  icon="el-icon-delete"
+                  @click="del(s.row)"
+                  >删除</el-button
+                >
+              </el-badge>
+            </template>
+          </el-table-column>
+        </el-table>
+        <!-- 分页 -->
+        <div class="page-box">
+          <el-pagination
+            background
+            layout="total, prev, pager, next, sizes, jumper"
+            :current-page.sync="p.pageNo"
+            :page-size.sync="p.pageSize"
+            :total="dataCount"
+            :page-sizes="[1, 10, 20, 30, 40, 50, 100]"
+            @current-change="f5()"
+            @size-change="f5()"
+          >
+          </el-pagination>
+        </div>
+      </div>
+      <!-- 添加一个 -->
+      <div class="c-panel c-panel-add">
+        <h4 class="c-title">添加一个</h4>
+        <el-form size="mini" v-if="m">
+          <el-form-item label="图片：">
+            <el-upload
+              class="avatar-uploader"
+              :show-file-list="false"
+              :http-request="upload"
+            >
+              <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="标题：">
+            <el-input v-model="m.title" style="width: 500px;"></el-input>
+          </el-form-item>
+          <el-form-item label="内容简介：">
+            <el-input
+              type="textarea"
+              :rows="2"
+              placeholder="请输入文章简介"
+              v-model="m.content"
+              style="width: 500px;"
+            >
+            </el-input>
+          </el-form-item>
+          <el-form-item label="链接：">
+            <el-input
+              v-model="m.link"
+              type="url"
+              style="width: 500px;"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="&emsp;">
+            <el-button
+              type="primary"
+              size="mini"
+              icon="el-icon-plus"
+              @click="add"
+              >添加</el-button
+            >
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
+    <!-- 模拟数据 -->
+    <script src="/public/monidata/home/mock-data-list.js"></script>
+    <script>
+      var app = new Vue({
+        el: '.vue-box',
+        delimiters: ['$$', '$$'],
+        data: {
+          sa: sa, // 超级对象
+          p: {
+            // 查询参数
+            pageNo: 1,
+            pageSize: 10,
+            sort_type: 0,
+          },
+          dataCount: 0,
+          dataList: [], // 数据集合
+          m: {
+            // 添加信息
+            id: 11,
+            title: '标题',
+            content: '',
+            img_src:
+              'http://color-test.oss-cn-qingdao.aliyuncs.com/dyc/img/2020/01/20/1579506071035455989950.jpeg',
+            is_update: false,
+          },
+          curr_m: null, // 当前操作的 m
+          imageUrl: '',
+        },
+        methods: {
+          // 刷新
+          f5: function () {
+            sa.ajax(
+              '/api/homeapi?type_id=1',
+              this.p,
+              function (res) {
+                this.dataList = res.data; // 数据
+                this.dataCount = res.dataCount; // 分页
+              }.bind(this),
+              { type: 'get' }
+            );
+          },
+          // 保存
+          add: function () {
+            var m = sa.copyJSON(this.m);
+            sa.ajax(
+              '/admin/teseadd?type_id=1',
+              this.m,
+              function (res) {
+                sa.alert(
+                  '添加成功',
+                  function () {
+                    this.dataList.push(m);
+                    this.imageUrl = '';
+                    this.f5();
+                  }.bind(this)
+                );
+              }.bind(this)
+            );
+          },
+          // 修改
+          update: function (data) {
+            var data2 = sa.copyJSON(data);
+            data2.create_time = undefined;
+            sa.ajax('/admin/teseedit?type_id=1', data2, function (res) {
+              sa.ok('修改成功');
+              data.is_update = false;
+            });
+          },
+          // 删除
+          del: function (data) {
+            sa.confirm(
+              '是否删除，此操作不可撤销',
+              function () {
+                sa.ajax(
+                  '/admin/tesedel?type_id=1&id=' + data.id,
+                  function (res) {
+                    sa.ok('删除成功');
+                    sa.arrayDelete(this.dataList, data);
+                  }.bind(this)
+                );
+              }.bind(this)
+            );
+          },
+          upload(f) {
+            // let file = document.getElementById('file');
+            let formData = new FormData();
+            formData.append('file', f.file);
+            fetch('/admin/upload', {
+              method: 'post',
+              body: formData,
+            })
+              .then((res) => res.json())
+              .then((res) => {
+                //上传成功之后 显示图片
+                this.imageUrl = res.data;
+                this.m.img_src = res.data;
+              });
+          },
+        },
+        created: function () {
+          this.f5();
+        },
+      });
+    </script>
+  </body>
+</html>

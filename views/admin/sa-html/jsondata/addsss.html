@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link
+      rel="stylesheet"
+      href="/public/static/kj/element-ui/theme-chalk/index.css"
+    />
+    <script src="/public/static/kj/vue.min.js"></script>
+    <script src="/public/static/kj/element-ui/index.js"></script>
+    <link rel="stylesheet" href="/public/static/kj/jsonedit/jsoneditor.css" />
+    <link rel="stylesheet" href="/public/static/kj/jsonedit/style.css" />
+    <link rel="icon" href="/images/logo-small.png" />
+    <title>JSONMate - JSON editor, inspector and beautifier</title>
+  </head>
+  <body>
+    <div id="content" class="main container">
+      <!-- br-->
+      <form id="paste" class="page-section form-inline">
+        <div class="controls">
+          <button id="beautify" class="btn">
+            <span class="glyph">&#128262;</span>Beautify
+          </button>
+          <button id="uglify" class="btn">
+            <span class="glyph">&#128166;</span>Uglify
+          </button>
+        </div>
+        <textarea id="json"></textarea>
+      </form>
+      <div id="editor-container" class="page-section">
+        <div id="legend">
+          <span id="expander">Expand all</span><em>Legend: </em
+          ><span class="array">array</span><span class="object">object</span
+          ><span class="string">string</span><span class="number">number</span
+          ><span class="boolean">boolean</span><span class="null">null</span
+          ><span>Remove item by deleting a property name.</span>
+        </div>
+        <p id="property-path" class="well"></p>
+        <div id="editor" class="json-editor"></div>
+      </div>
+    </div>
+    <script src="/public/static/kj/jsonedit/json2.js"></script>
+    <script src="/public/static/kj/jquery.min.js"></script>
+    <script src="/public/static/kj/jsonedit/jquery.jsoneditor.js"></script>
+    <script src="/public/static/kj/jsonedit/vizcluster.js"></script>
+    <script src="/public/static/kj/jsonedit/main.js"></script>
+  </body>
+</html>

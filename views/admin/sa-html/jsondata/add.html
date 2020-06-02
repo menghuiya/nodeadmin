@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>文件编辑</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <!-- 所有的 css & js 资源 -->
+    <link
+      rel="stylesheet"
+      href="/public/static/kj/element-ui/theme-chalk/index.css"
+    />
+    <link rel="stylesheet" href="/public/static/kj/jsonedit/jsoneditor.css" />
+    <link rel="stylesheet" href="/public/static/kj/jsonedit/style.css" />
+    <link rel="stylesheet" href="/public/static/sa.css" />
+    <script src="/public/static/kj/vue.min.js"></script>
+    <script src="/public/static/kj/element-ui/index.js"></script>
+    <script src="/public/static/kj/jquery.min.js"></script>
+    <script src="/public/static/kj/layer/layer.js"></script>
+    <script src="/public/static/sa.js"></script>
+  </head>
+  <body>
+    <!-- 防止margin向下击穿 -->
+    <div style="margin-top: -1em;"><br /></div>
+    <div class="vue-box" style="display: none;" :style="'display: block;'">
+      <!-- 参数栏 -->
+      <div class="c-panel">
+        <div class="c-title">文件编辑</div>
+        <el-form size="mini" v-if="m">
+          <el-form-item label="json文件名：">
+            <el-input placeholder="请输入内容" v-model="m.name"> </el-input>
+          </el-form-item>
+          <el-form-item label="json文件名：">
+            <div id="content" class="main container">
+              <!-- br-->
+              <div id="paste" class="page-section form-inline">
+                <div class="controls">
+                  <button id="beautify" class="btn">
+                    <span class="glyph">&#128262;</span>Beautify
+                  </button>
+                  <button id="uglify" class="btn">
+                    <span class="glyph">&#128166;</span>Uglify
+                  </button>
+                </div>
+                <textarea id="json" v-model="m.content"></textarea>
+              </div>
+              <div id="editor-container" class="page-section">
+                <div id="legend">
+                  <span id="expander">展开全部内容</span>
+                  <span class="array">array</span>
+                  <span class="object">object</span>
+                  <span class="string">string</span>
+                  <span class="number">number</span>
+                  <span class="boolean">boolean</span>
+                  <span class="null">null</span>
+                </div>
+                <p id="property-path" class="well"></p>
+                <div id="editor" class="json-editor"></div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item label="&emsp;">
+            <el-button
+              type="primary"
+              icon="el-icon-plus"
+              size="mini"
+              @click="ok"
+              >确定</el-button
+            >
+          </el-form-item>
+          <div style="margin-top: 10px;"></div>
+        </el-form>
+      </div>
+      <!-- 给wangEditor打一波广告 -->
+    </div>
+
+    <!-- //引入js代码 -->
+    <script src="/public/static/kj/jsonedit/json2.js"></script>
+    <script src="/public/static/kj/jsonedit/jquery.jsoneditor.js"></script>
+    <script src="/public/static/kj/jsonedit/vizcluster.js"></script>
+    <script src="/public/static/kj/jsonedit/main.js"></script>
+
+    <script type="text/javascript">
+      // 创建一个空的 m
+      function create_m() {
+        return {
+          name: `{{jsondata.textname}}` || '',
+          content: '',
+        };
+      }
+    </script>
+    <script>
+      var app = new Vue({
+        el: '.vue-box',
+        delimiters: ['$$', '$$'],
+        data: {
+          json_name: `{{jsondata.textname}}` || '', // 从url中获取传值
+          m: create_m(),
+          textarea2: '',
+        },
+        methods: {
+          // 提交
+          ok: function () {
+            // 开始增加或修改
+            this.m.content = $('#json').val();
+            console.log(this.json_name.length);
+            if (this.json_name.length == 0) {
+              sa.ajax(
+                '/admin/jsonadd',
+                this.m,
+                function (res) {
+                  sa.alert('增加成功');
+                }.bind(this)
+              );
+            } else {
+              sa.ajax(
+                '/admin/jsonedit',
+                this.m,
+                function (res) {
+                  sa.alert(
+                    '修改成功',
+                    function () {
+                      parent.app.f5();
+                      sa.closeCurrIframe();
+                    }.bind(this)
+                  );
+                }.bind(this)
+              );
+            }
+          },
+        },
+        created() {
+          json = JSON.parse(`{{JSON.stringify(jsondata.data)}}`) || {};
+        },
+      });
+      console.log(`{{jsondata.textname}}`);
+    </script>
+  </body>
+</html>

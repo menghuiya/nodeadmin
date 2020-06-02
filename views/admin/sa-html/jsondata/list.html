@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>帖子列表</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <!-- 所有的 css & js 资源 -->
+    <link
+      rel="stylesheet"
+      href="/public/static/kj/element-ui/theme-chalk/index.css"
+    />
+    <link rel="stylesheet" href="/public/static/sa.css" />
+    <script src="/public/static/kj/vue.min.js"></script>
+    <script src="/public/static/kj/element-ui/index.js"></script>
+    <script src="/public/static/kj/jquery.min.js"></script>
+    <script src="/public/static/kj/layer/layer.js"></script>
+    <script src="/public/static/sa.js"></script>
+  </head>
+  <body>
+    <!-- 防止margin向下击穿 -->
+    <div style="margin-top: -1em;"><br /></div>
+    <div class="vue-box" style="display: none;" :style="'display: block;'">
+      <div class="c-panel">
+        <!-- 参数栏 -->
+        <div class="c-title">检索参数</div>
+        <!-- 数据列表 -->
+        <!-- <h4 class="c-title">列表</h4> -->
+        <el-table class="data-table" :data="dataList" size="mini">
+          <el-table-column label="文件id" prop="id"></el-table-column>
+          <el-table-column label="文件名称" prop="name"></el-table-column>
+          <el-table-column prop="address" label="操作" width="150px">
+            <template slot-scope="s">
+              <el-button
+                class="c-btn"
+                type="primary"
+                icon="el-icon-edit"
+                @click="update(s.row)"
+                >修改</el-button
+              >
+              <el-button
+                class="c-btn"
+                type="danger"
+                icon="el-icon-delete"
+                @click="del(s.row)"
+                >删除</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+        <!-- 分页 -->
+        <div class="page-box">
+          <el-pagination
+            background
+            layout="total, prev, pager, next, sizes, jumper"
+            :current-page.sync="p.pageNo"
+            :page-size.sync="p.pageSize"
+            :total="dataCount"
+            :page-sizes="[1, 10, 20, 30, 40, 50, 100]"
+            @current-change="f5(true)"
+            @size-change="f5(true)"
+          >
+          </el-pagination>
+        </div>
+      </div>
+    </div>
+    <!-- <script src="/public/monidata/article/data-list.js"></script> -->
+    <script>
+      var app = new Vue({
+        el: '.vue-box',
+        delimiters: ['$$', '$$'],
+        data: {
+          sa: sa,
+          p: {
+            // 查询参数
+            id: '',
+            title: '',
+            category: '',
+            sort_type: 0,
+            pageNo: 1,
+            pageSize: 10,
+          },
+          dataCount: 0, // 数据总数
+          dataList: [], // 数据集合
+        },
+        methods: {
+          // 数据刷新
+          f5: function () {
+            sa.ajax(
+              '/api/jsondatalist',
+              // this.p,
+              function (res) {
+                this.dataList = res.data; // 数据
+                console.log(res.data);
+                this.dataCount = res.dataCount; // 分页
+              }.bind(this),
+              { type: 'get' }
+            );
+          },
+          // 修改
+          update: function (data) {
+            // window.location = './edit?id=' + data.id;
+            // return;
+            sa.showIframe('用户修改', './add?name=' + data.name, '900px');
+          },
+          // 删除
+          del: function (data) {
+            sa.confirm(
+              '是否删除，此操作不可撤销',
+              function () {
+                sa.ajax(
+                  '/admin/jsondel?name=' + data.name,
+                  function (res) {
+                    sa.arrayDelete(this.dataList, data);
+                    sa.ok('删除成功');
+                  }.bind(this)
+                );
+              }.bind(this)
+            );
+          },
+        },
+        created: function () {
+          this.f5();
+        },
+        filters: {
+          formatdate: function (val) {
+            if (!val) {
+              console.log('格式化异常');
+              return '';
+            }
+            val = new Date(Number(val));
+            let year = val.getFullYear(); //取得4位数的年份
+            let month = val.getMonth() + 1; //取得日期中的月份，其中0表示1月，11表示12月
+            let date = val.getDate();
+            let hour = val.getHours();
+            let minu = val.getMinutes();
+            let sec = val.getSeconds();
+
+            return (
+              year +
+              '-' +
+              month +
+              '-' +
+              date +
+              ' ' +
+              hour +
+              ':' +
+              minu +
+              ':' +
+              sec
+            );
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

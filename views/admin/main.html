@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>帖子列表</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <!-- 所有的 css & js 资源 -->
+    <link
+      rel="stylesheet"
+      href="/public/static/kj/element-ui/theme-chalk/index.css"
+    />
+    <link rel="stylesheet" href="/public/static/sa.css" />
+    <script src="/public/static/kj/vue.min.js"></script>
+    <script src="/public/static/kj/element-ui/index.js"></script>
+    <script src="/public/static/kj/jquery.min.js"></script>
+    <script src="/public/static/kj/layer/layer.js"></script>
+    <script src="/public/static/sa.js"></script>
+  </head>
+  <body>
+    <!-- 防止margin向下击穿 -->
+    <div style="margin-top: -1em;"><br /></div>
+    <div class="vue-box" style="display: none;" :style="'display: block;'">
+      <div class="c-panel">
+        <div class="c-title">系统信息</div>
+        <el-table :data="tableData" border style="width: 100%;">
+          <el-table-column prop="name" label="菜单"> </el-table-column>
+          <el-table-column prop="msg" label="数据"> </el-table-column>
+        </el-table>
+      </div>
+      <div class="c-panel">
+        <div class="c-title">开发团队</div>
+        <el-table :data="tableData1" border style="width: 100%;">
+          <el-table-column prop="name" label="菜单"> </el-table-column>
+          <el-table-column prop="msg" label="数据"> </el-table-column>
+        </el-table>
+      </div>
+    </div>
+    <script src="http://pv.sohu.com/cityjson?ie=utf-8"></script>
+    <script>
+      let app = new Vue({
+        el: '.vue-box',
+        delimiters: ['$$', '$$'],
+        data: {
+          sa: sa,
+          tableData: [
+            {
+              name: '系统版本',
+              msg: '1.1.1.0.1',
+            },
+            {
+              name: '服务器地址',
+              msg: 'test.wdf5.com',
+            },
+            {
+              name: '操作系统',
+              msg: 'Linux',
+            },
+            {
+              name: '运行环境',
+              msg: 'Linux/node+express+npm',
+            },
+            {
+              name: 'node版本',
+              msg: 'v12.16.1',
+            },
+            {
+              name: '上传限制',
+              msg: '2m',
+            },
+            {
+              name: '当前ip',
+              msg: returnCitySN['cip'],
+            },
+            {
+              name: '当前地区',
+              msg: returnCitySN['cname'],
+            },
+          ],
+          tableData1: [
+            {
+              name: '版权所有',
+              msg: 'www.锦城学院.com 访问官网',
+            },
+            {
+              name: '开发者',
+              msg: '梦回(12743230554@qq.com)',
+            },
+          ],
+        },
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>各种查询参数示例</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <!-- 所有的 css & js 资源 -->
+    <link
+      rel="stylesheet"
+      href="/public/static/kj/element-ui/theme-chalk/index.css"
+    />
+    <link rel="stylesheet" href="/public/static/sa.css" />
+    <script src="/public/static/kj/vue.min.js"></script>
+    <script src="/public/static/kj/element-ui/index.js"></script>
+    <script src="/public/static/kj/jquery.min.js"></script>
+    <script src="/public/static/kj/layer/layer.js"></script>
+    <script src="/public/static/sa.js"></script>
+    <style>
+      .td-img {
+        width: 180px;
+        height: 90px;
+        cursor: pointer;
+        vertical-align: middle;
+      }
+      .c-panel-add .td-img {
+        width: 200px;
+      }
+      .c-panel-add .el-form .el-input {
+        width: 200px;
+      }
+      .avatar-uploader .el-upload {
+        border: 1px dashed #d9d9d9;
+        border-radius: 6px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+      }
+      .avatar-uploader .el-upload:hover {
+        border-color: #409eff;
+      }
+      .avatar-uploader-icon {
+        font-size: 28px;
+        color: #8c939d;
+        width: 500px;
+        height: 200px;
+        line-height: 178px;
+        text-align: center;
+      }
+      .avatar {
+        width: 500px;
+        height: 200px;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 防止margin向下击穿 -->
+    <div style="margin-top: -1em;"><br /></div>
+    <div class="vue-box" style="display: none;" :style="'display: block;'">
+      <div class="c-panel">
+        <!-- 数据栏 -->
+        <div class="c-title">数据列表</div>
+        <el-table class="data-table" :data="dataList" size="mini">
+          <el-table-column
+            label="文件id"
+            prop="id"
+            width="70px"
+          ></el-table-column>
+          <el-table-column label="文件名称" prop="name"></el-table-column>
+          <el-table-column label="文件外链" prop="url"></el-table-column>
+          <el-table-column label="文件tag">
+            <template slot-scope="s">
+              <el-tag type="success" effect="dark">$$s.row.tag$$</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="address" label="操作" width="150px">
+            <template slot-scope="s">
+              <el-button
+                class="c-btn"
+                type="danger"
+                icon="el-icon-delete"
+                @click="del(s.row)"
+                >删除</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+        <!-- 分页 -->
+        <div class="page-box">
+          <el-pagination
+            background
+            layout="total, prev, pager, next, sizes, jumper"
+            :current-page.sync="p.pageNo"
+            :page-size.sync="p.pageSize"
+            :total="dataCount"
+            :page-sizes="[1, 10, 20, 30, 40, 50, 100]"
+            @current-change="f5()"
+            @size-change="f5()"
+          >
+          </el-pagination>
+        </div>
+      </div>
+      <!-- 添加一个 -->
+      <div class="c-panel c-panel-add">
+        <h4 class="c-title">添加一个</h4>
+        <el-form size="mini" v-if="m">
+          <el-form-item label="附件：">
+            <el-upload
+              class="upload-demo"
+              :http-request="upload"
+              :show-file-list="false"
+              :limit="1"
+            >
+              <el-button size="small" type="primary">点击上传</el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="附件名称：">
+            <el-input v-model="m.name"></el-input>
+          </el-form-item>
+          <el-form-item label="附件地址：">
+            <el-input v-model="m.url" type="url"></el-input>
+          </el-form-item>
+          <el-form-item label="附件tag：">
+            <el-input
+              v-model="m.tag"
+              placeholder="请先上传后再输入tag"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="&emsp;">
+            <el-button
+              type="primary"
+              size="mini"
+              icon="el-icon-plus"
+              @click="add"
+              >添加</el-button
+            >
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
+    <!-- 模拟数据 -->
+    <script>
+      var app = new Vue({
+        el: '.vue-box',
+        delimiters: ['$$', '$$'],
+        data: {
+          sa: sa, // 超级对象
+          p: {
+            // 查询参数
+            pageNo: 1,
+            pageSize: 10,
+            sort_type: 0,
+          },
+          dataCount: 0,
+          dataList: [], // 数据集合
+          m: {
+            // 添加信息
+            id: '',
+            name: '',
+            url: '',
+            tag: '',
+          },
+          curr_m: null, // 当前操作的 m
+        },
+        methods: {
+          // 刷新
+          f5: function () {
+            sa.ajax(
+              '/api/ensdatalist',
+              this.p,
+              function (res) {
+                this.dataList = res.data; // 数据
+                this.dataCount = res.dataCount; // 分页
+              }.bind(this),
+              { type: 'get' }
+            );
+          },
+          // 保存
+          add: function () {
+            if (this.m.name == '' || this.m.tag == '') {
+              this.$message.error('请检查表单完整性');
+              return;
+            }
+            sa.ajax(
+              '/admin/ensadd',
+              this.m,
+              function (res) {
+                sa.alert(
+                  '增加成功',
+                  function () {
+                    this.m.name = '';
+                    this.m.url = '';
+                    this.m.tag = '';
+                    this.f5();
+                  }.bind(this)
+                );
+              }.bind(this)
+            );
+          },
+          // 删除
+          del: function (data) {
+            sa.confirm(
+              '是否删除，此操作不可撤销',
+              function () {
+                sa.ajax(
+                  '/admin/ensdel?url=' + data.url + '&id=' + data.id,
+                  function (res) {
+                    sa.ok('删除成功');
+                    sa.arrayDelete(this.dataList, data);
+                  }.bind(this)
+                );
+              }.bind(this)
+            );
+          },
+          upload(f) {
+            // let file = document.getElementById('file');
+            let formData = new FormData();
+            formData.append('file', f.file);
+            fetch('/admin/ensupload', {
+              method: 'post',
+              body: formData,
+            })
+              .then((res) => res.json())
+              .then((res) => {
+                //上传成功之后 附件信息
+                this.m.name = res.data.name.split('_mh_')[1];
+                this.m.url = res.data.url;
+              });
+          },
+        },
+        created: function () {
+          this.f5();
+        },
+      });
+    </script>
+  </body>
+</html>

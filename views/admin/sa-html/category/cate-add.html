@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>帖子发包</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <!-- 所有的 css & js 资源 -->
+    <link
+      rel="stylesheet"
+      href="/public/static/kj/element-ui/theme-chalk/index.css"
+    />
+    <link rel="stylesheet" href="/public/static/sa.css" />
+    <script src="/public/static/kj/vue.min.js"></script>
+    <script src="/public/static/kj/element-ui/index.js"></script>
+    <script src="/public/static/kj/jquery.min.js"></script>
+    <script src="/public/static/kj/layer/layer.js"></script>
+    <script src="/public/static/sa.js"></script>
+    <script src=""></script>
+  </head>
+  <body>
+    <!-- 防止margin向下击穿 -->
+    <div style="margin-top: -1em;"><br /></div>
+    <div class="vue-box" style="display: none;" :style="'display: block;'">
+      <!-- 参数栏 -->
+      <div class="c-panel">
+        <div class="c-title">{{msg}}-{{parentId}}</div>
+        <el-form size="mini" v-if="m">
+          <el-form-item label="分类名称：">
+            <el-input
+              size="mini"
+              v-model="m.name"
+              style="width: 700px;"
+              placeholder="例如：2002年的第一场雪"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="&emsp;">
+            <el-button
+              type="primary"
+              icon="el-icon-plus"
+              size="mini"
+              @click="ok"
+              >确定</el-button
+            >
+          </el-form-item>
+          <div style="margin-top: 10px;"></div>
+        </el-form>
+      </div>
+    </div>
+    <script type="text/javascript">
+      sa.checkAuth(true);
+      // 创建一个空的 m
+      function create_m() {
+        return {
+          name: `{{category.name||'默认分类'}}`,
+          cate_id: `{{category._id.toString()}}`,
+        };
+      }
+    </script>
+    <script>
+      var app = new Vue({
+        el: '.vue-box',
+        data: {
+          m: create_m(),
+          cate_id: `{{category._id}}`,
+          parentId: `{{parentId}}`,
+        },
+        methods: {
+          // 提交
+          ok: function () {
+            // 开始增加或修改
+            if (this.cate_id == '') {
+              if (this.parentId != '') {
+                this.m.parentId = this.parentId;
+              }
+              sa.ajax(
+                '/admin/sa-html/category/cate-add',
+                this.m,
+                function (res) {
+                  sa.alert('成功提示：' + res.msg, function () {
+                    parent.app.f5();
+                  });
+                }.bind(this)
+              );
+            } else {
+              sa.ajax(
+                '/admin/sa-html/category/cate-edit',
+                this.m,
+                function (res) {
+                  sa.alert(
+                    '修改成功',
+                    function () {
+                      parent.app.f5();
+                      sa.closeCurrIframe();
+                    }.bind(this),
+                    { type: 'post' }
+                  );
+                }.bind(this)
+              );
+            }
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

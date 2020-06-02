@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>帖子列表</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <!-- 所有的 css & js 资源 -->
+    <link
+      rel="stylesheet"
+      href="/public/static/kj/element-ui/theme-chalk/index.css"
+    />
+    <link rel="stylesheet" href="/public/static/sa.css" />
+    <script src="/public/static/kj/vue.min.js"></script>
+    <script src="/public/static/kj/element-ui/index.js"></script>
+    <script src="/public/static/kj/jquery.min.js"></script>
+    <script src="/public/static/kj/layer/layer.js"></script>
+    <script src="/public/static/sa.js"></script>
+  </head>
+  <body>
+    <!-- 防止margin向下击穿 -->
+    <div style="margin-top: -1em;"><br /></div>
+    <div class="vue-box" style="display: none;" :style="'display: block;'">
+      <div class="c-panel">
+        <!-- 参数栏 -->
+        <div class="c-title">分类列表</div>
+
+        <!-- 数据列表 -->
+        <!-- <h4 class="c-title">列表</h4> -->
+        <el-table
+          :data="tableData"
+          style="width: 100%; margin-bottom: 20px;"
+          row-key="_id"
+          border
+          :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+        >
+          <el-table-column prop="name" label="分类名称" sortable width="180">
+          </el-table-column>
+          <el-table-column prop="_id" label="分类id" sortable width="240">
+          </el-table-column>
+          <el-table-column label="排序" width="60">
+            <template slot-scope="s">
+              <el-input
+                size="mini"
+                v-model="s.row.sort"
+                @input="s.row.is_update=true"
+              ></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column prop="date" label="时间" width="180">
+            2020-4-10
+          </el-table-column>
+          <el-table-column prop="user" label="创建人" width="120">
+            梦回
+          </el-table-column>
+          <el-table-column prop="sort" label="操作">
+            <template slot-scope="s">
+              <el-button
+                class="c-btn"
+                type="primary"
+                icon="el-icon-edit"
+                @click="add(s.row)"
+                v-if="s.row.level!=3"
+                >增加子栏目</el-button
+              >
+              <el-button
+                class="c-btn"
+                type="primary"
+                icon="el-icon-edit"
+                @click="update(s.row)"
+                >修改</el-button
+              >
+              <el-button
+                class="c-btn"
+                type="danger"
+                icon="el-icon-delete"
+                @click="del(s.row)"
+                >删除</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+        <!-- 分页 -->
+        <div class="page-box">
+          <el-pagination
+            background
+            layout="total, prev, pager, next, sizes, jumper"
+            :current-page.sync="p.pageNo"
+            :page-size.sync="p.pageSize"
+            :total="dataCount"
+            :page-sizes="[1, 10, 20, 30, 40, 50, 100]"
+            @current-change="f5(true)"
+            @size-change="f5(true)"
+          >
+          </el-pagination>
+        </div>
+      </div>
+    </div>
+    <script>
+      var app = new Vue({
+        el: '.vue-box',
+        delimiters: ['$$', '$$'],
+        data: {
+          sa: sa,
+          p: {
+            // 查询参数
+            id: '',
+            name: '',
+          },
+          sort: 0,
+          dataCount: 0, // 数据总数
+          tableData: [],
+          // 数据集合
+        },
+
+        methods: {
+          // 数据刷新
+          f5: function () {
+            sa.ajax(
+              '/api/ceteapi',
+              this.p,
+              function (res) {
+                // console.log(res);
+                this.tableData = res.data; // 数据
+                // this.dataCount = res.dataCount; // 分页
+              }.bind(this),
+              // { res: res }
+              { type: 'get' }
+            );
+          },
+          // 增加子栏目
+          add: function (data) {
+            console.log(data._id);
+            sa.showIframe(
+              '分类修改',
+              '/admin/sa-html/category/cate-add?cate_id=' + data._id,
+              '900px',
+              '250px'
+            );
+          },
+          // 修改
+          update: function (data) {
+            console.log(data._id);
+            sa.showIframe(
+              '分类修改',
+              '/admin/sa-html/category/cate-edit?cate_id=' + data._id,
+              '900px',
+              '250px'
+            );
+          },
+          // 删除
+          del: function (data) {
+            sa.confirm(
+              '是否删除，此操作不可撤销',
+              function () {
+                sa.ajax(
+                  '/admin/sa-html/category/cate-delete?cate_id=' + data._id,
+                  function (res) {
+                    // sa.arrayDelete(this.tableData, data);
+                    sa.ok('删除成功');
+                    setTimeout(() => {
+                      this.f5();
+                    }, 1000);
+                  }.bind(this),
+                  { type: 'get' }
+                );
+              }.bind(this)
+            );
+          },
+          load(tree, treeNode, resolve) {
+            setTimeout(() => {
+              resolve([
+                {
+                  id: 31,
+                  date: '2016-05-01',
+                  name: '王小虎',
+                  address: '上海市普陀区金沙江路 1519 弄',
+                },
+                {
+                  id: 32,
+                  date: '2016-05-01',
+                  name: '王小虎',
+                  address: '上海市普陀区金沙江路 1519 弄',
+                },
+              ]);
+            }, 1000);
+          },
+        },
+        created: function () {
+          this.f5();
+        },
+      });
+    </script>
+  </body>
+</html>

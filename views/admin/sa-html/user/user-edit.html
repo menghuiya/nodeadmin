@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>用户添加</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <!-- 所有的 css & js 资源 -->
+    <link
+      rel="stylesheet"
+      href="/public/static/kj/element-ui/theme-chalk/index.css"
+    />
+    <link rel="stylesheet" href="/public/static/sa.css" />
+    <script src="/public/static/kj/vue.min.js"></script>
+    <script src="/public/static/kj/element-ui/index.js"></script>
+    <script src="/public/static/kj/jquery.min.js"></script>
+    <script src="/public/static/kj/layer/layer.js"></script>
+    <script src="/public/static/sa.js"></script>
+  </head>
+  <body>
+    <!-- 防止margin向下击穿 -->
+    <div style="margin-top: -1em;"><br /></div>
+    <div class="vue-box" style="display: none;" :style="'display: block;'">
+      <!-- 参数栏 -->
+      <div class="c-panel">
+        <div class="c-title">用户添加</div>
+        <el-form size="mini" v-if="m">
+          <el-form-item label="昵称：">
+            <el-input v-model="m.username"></el-input>
+          </el-form-item>
+          <el-form-item label="密码：">
+            <el-input
+              v-model="m.password"
+              placeholder="请输入新密码"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="角色：">
+            <el-select v-model="m.role">
+              <el-option value="管理员">管理员</el-option>
+              <el-option value="网站编辑">网站编辑</el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="性别：">
+            <el-radio-group v-model="m.sex" size="mini">
+              <el-radio :label="1">男</el-radio>
+              <el-radio :label="2">女</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="&emsp;">
+            <el-button
+              type="primary"
+              icon="el-icon-plus"
+              size="mini"
+              @click="ok"
+              >确定</el-button
+            >
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
+    <script type="text/javascript">
+      sa.checkAuth(true);
+      new Vue({
+        el: '.vue-box',
+        delimiters: ['$$', '$$'],
+        data: {
+          m: {
+            // 查询参数
+            _id: `{{data._id.toString()}}`,
+            username: `{{data.username}}`,
+            password: '',
+            role: `{{data.role}}`,
+            sex: Number(`{{data.sex}}`),
+          },
+        },
+        methods: {
+          // ok
+          ok: function () {
+            sa.ajax(
+              '/admin/sa-html/user/user-edit',
+              this.m,
+              function (res) {
+                // return layer.alert('成功提示：' + res.msg);
+                sa.alert('成功提示：' + res.msg, function () {
+                  parent.app.f5();
+                  sa.closeCurrIframe();
+                });
+              }.bind(this)
+            );
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"
+    />
+    <!-- 引入组件库 -->
+    <link rel="stylesheet" href="/public/static/sa.css" />
+    <script src="/public/static/kj/vue.min.js"></script>
+    <script src="/public/static/kj/element-ui/index.js"></script>
+    <script src="/public/static/kj/jquery.min.js"></script>
+    <script src="/public/static/kj/layer/layer.js"></script>
+    <script src="/public/static/sa.js"></script>
+    <style>
+      #app {
+        width: 600px;
+        height: 500px;
+        margin: 0 auto;
+      }
+      .text {
+        font-size: 14px;
+      }
+
+      .item {
+        margin-bottom: 18px;
+      }
+
+      .clearfix:before,
+      .clearfix:after {
+        display: table;
+        content: '';
+      }
+      .clearfix:after {
+        clear: both;
+      }
+
+      .box-card {
+        margin-top: 20px;
+        width: 550px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app">
+      <el-steps :active="active" finish-status="success">
+        <el-step title="阅读下面安装条例"></el-step>
+        <el-step title="输入管理员信息"></el-step>
+        <el-step title="确定提交"></el-step>
+      </el-steps>
+      <el-card class="box-card" v-show="active==0">
+        <div slot="header" class="clearfix">
+          <span>安装条例</span>
+          <el-button
+            type="success"
+            style="float: right;"
+            ref="agree"
+            @click="next"
+            :disabled="!checked"
+            >下一步</el-button
+          >
+        </div>
+        <div v-for="o in 4" :key="o" class="text item">
+          {{'条例一 ' + o }}
+        </div>
+        <el-checkbox v-model="checked">确认阅读</el-checkbox>
+      </el-card>
+      <el-card class="box-card" v-show="active==1">
+        <div slot="header" class="clearfix">
+          <span>管理员信息</span>
+        </div>
+        <el-form
+          :model="ruleForm"
+          status-icon
+          :rules="rules"
+          ref="ruleForm"
+          label-width="100px"
+          class="demo-ruleForm"
+        >
+          <el-form-item label="账号" prop="count">
+            <el-input v-model.number="ruleForm.count"></el-input>
+          </el-form-item>
+          <el-form-item label="密码" prop="pass">
+            <el-input
+              type="password"
+              v-model="ruleForm.pass"
+              autocomplete="off"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="确认密码" prop="checkPass">
+            <el-input
+              type="password"
+              v-model="ruleForm.checkPass"
+              autocomplete="off"
+            ></el-input>
+          </el-form-item>
+
+          <el-form-item>
+            <el-button type="primary" @click="submitForm('ruleForm')"
+              >提交</el-button
+            >
+            <el-button @click="resetForm('ruleForm')">重置</el-button>
+          </el-form-item>
+        </el-form>
+      </el-card>
+      <el-card class="box-card" v-show="active==2">
+        <div slot="header" class="clearfix">
+          <span>完成注册</span>
+        </div>
+        <div class="text item">
+          <a href="/admin">进入后台</a>
+          <a href="/">进入首页</a>
+        </div>
+      </el-card>
+    </div>
+  </body>
+  <script>
+    new Vue({
+      data() {
+        var checkAge = (rule, value, callback) => {
+          if (!value) {
+            return callback(new Error('账号不能为空'));
+          }
+          setTimeout(() => {
+            if (value.length < 2) {
+              callback(new Error('请至少输入四个字符'));
+            } else {
+              callback();
+            }
+          }, 1000);
+        };
+        var validatePass = (rule, value, callback) => {
+          if (value === '') {
+            callback(new Error('请输入密码'));
+          } else {
+            if (this.ruleForm.checkPass !== '') {
+              this.$refs.ruleForm.validateField('checkPass');
+            }
+            callback();
+          }
+        };
+        var validatePass2 = (rule, value, callback) => {
+          if (value === '') {
+            callback(new Error('请再次输入密码'));
+          } else if (value !== this.ruleForm.pass) {
+            callback(new Error('两次输入密码不一致!'));
+          } else {
+            callback();
+          }
+        };
+        return {
+          active: 0,
+          checked: false,
+          ruleForm: {
+            pass: '',
+            checkPass: '',
+            count: '',
+          },
+          rules: {
+            pass: [{ validator: validatePass, trigger: 'blur' }],
+            checkPass: [{ validator: validatePass2, trigger: 'blur' }],
+            count: [{ validator: checkAge, trigger: 'blur' }],
+          },
+        };
+      },
+      methods: {
+        next() {
+          if (this.active++ > 2) this.active = 0;
+        },
+        submitForm(formName) {
+          this.$refs[formName].validate((valid) => {
+            if (valid) {
+              sa.ajax(
+                '/install',
+                this.ruleForm,
+                function (res) {
+                  sa.alert(
+                    '增加成功',
+                    function () {
+                      this.next();
+                    }.bind(this)
+                  );
+                }.bind(this)
+              );
+            } else {
+              console.log('error submit!!');
+              return false;
+            }
+          });
+        },
+        resetForm(formName) {
+          this.$refs[formName].resetFields();
+        },
+      },
+    }).$mount('#app');
+  </script>
+</html>

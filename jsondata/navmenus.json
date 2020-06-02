@@ -1,0 +1,74 @@
+[
+    {
+        "entity": {
+            "id": 0,
+            "url": "/home",
+            "alias": "首页"
+        }
+    },
+    {
+        "entity": {
+            "id": 1,
+            "url": "/xygk/xyjj",
+            "alias": "学院概况"
+        },
+        "childs": [
+            {
+                "entity": {
+                    "id": 11,
+                    "url": "/xygk/xyjj",
+                    "alias": "学院简介"
+                }
+            },
+            {
+                "entity": {
+                    "id": 22,
+                    "url": "/xygk/xyry",
+                    "alias": "学院荣誉"
+                }
+            }
+        ]
+    },
+    {
+        "entity": {
+            "id": 2,
+            "url": "/jx",
+            "alias": "教学"
+        }
+    },
+    {
+        "entity": {
+            "id": 3,
+            "url": "/ky",
+            "alias": "科研"
+        }
+    },
+    {
+        "entity": {
+            "id": 4,
+            "url": "/pycg",
+            "alias": "培养成果"
+        }
+    },
+    {
+        "entity": {
+            "id": 5,
+            "url": "/djgz",
+            "alias": "党建工作"
+        }
+    },
+    {
+        "entity": {
+            "id": 6,
+            "url": "/xsgz",
+            "alias": "学生工作"
+        }
+    },
+    {
+        "entity": {
+            "id": 7,
+            "url": "/zsgz",
+            "alias": "招生工作"
+        }
+    }
+]
