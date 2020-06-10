@@ -93,12 +93,12 @@
           <el-pagination
             background
             layout="total, prev, pager, next, sizes, jumper"
-            :current-page.sync="p.pageNo"
-            :page-size.sync="p.pageSize"
+            :current-page.sync="p.page"
+            :page-size.sync="p.limit"
             :total="dataCount"
-            :page-sizes="[1, 10, 20, 30, 40, 50, 100]"
-            @current-change="f5()"
-            @size-change="f5()"
+            :page-sizes="[1, 5,10, 20]"
+            @current-change="f5(true)"
+            @size-change="f5(true)"
           >
           </el-pagination>
         </div>
@@ -112,7 +112,6 @@
               class="upload-demo"
               :http-request="upload"
               :show-file-list="false"
-              :limit="1"
             >
               <el-button size="small" type="primary">点击上传</el-button>
             </el-upload>
@@ -150,11 +149,10 @@
           sa: sa, // 超级对象
           p: {
             // 查询参数
-            pageNo: 1,
-            pageSize: 10,
-            sort_type: 0,
+            page: 1,
+            limit: 10,
           },
-          dataCount: 0,
+          dataCount: 100,
           dataList: [], // 数据集合
           m: {
             // 添加信息
@@ -170,10 +168,16 @@
           f5: function () {
             sa.ajax(
               '/api/ensdatalist',
-              this.p,
               function (res) {
-                this.dataList = res.data; // 数据
-                this.dataCount = res.dataCount; // 分页
+                let dataarr = res.data; // 数据
+
+                let skipNum = (this.p.page - 1) * this.p.limit;
+                let newArr =
+                  skipNum + this.p.limit >= dataarr.length
+                    ? dataarr.slice(skipNum, dataarr.length)
+                    : dataarr.slice(skipNum, skipNum + this.p.limit);
+                this.dataList = newArr;
+                this.dataCount = res.data.length; // 分页
               }.bind(this),
               { type: 'get' }
             );
@@ -217,6 +221,7 @@
           },
           upload(f) {
             // let file = document.getElementById('file');
+            console.log('我开始上传了');
             let formData = new FormData();
             formData.append('file', f.file);
             fetch('/admin/ensupload', {
@@ -226,6 +231,7 @@
               .then((res) => res.json())
               .then((res) => {
                 //上传成功之后 附件信息
+                console.log(res);
                 this.m.name = res.data.name.split('_mh_')[1];
                 this.m.url = res.data.url;
               });
