@@ -1,0 +1,144 @@
+http://www.9ixsw.com/(\w+)/(\d+)\.html
+
+http://m.9ixsw.com/${1}/${2}.html
+
+对应
+http://www.9ixsw.com/wangudishenjue/12371.html
+
+http://www.9ixsw.com/meiyoushuiworebuqi/2006.html
+
+http://www.9ixsw.com/datangjishi/181133.html
+
+
+http://www.biquge21.com/(\w+)/(\w+).html http://m.biquge21.com/${1}/${2}.html
+http://www.biquge21.com/([a-zA-Z0-9]+)/([a-zA-Z0-9]+).html http://m.biquge21.com/${1}/${2}.html
+
+
+https://www.52mhzy.cn/smart_video-smart_video.html?mod=v&tid=26
+
+https://www.52mhzy.cn/smart_video-v&26.html
+
+RewriteEngine on       
+RewriteCond %{QUERY_STRING} ^(.*)$
+RewriteRule ^smart_video-v&([0-9]+)\.html$ smart_video-smart_video.html?mod=v&tid=$1&%1
+https://www.52mhzy.cn/smart_video-s&3&0&0.html
+https://www.52mhzy.cn/smart_video-smart_video.html?mod=s&fcid=3&scid=0&tcid=0
+
+rwsblog伪静态
+RewriteEngine on    
+RewriteCond %{QUERY_STRING} ^(.*)$
+RewriteRule ^index.html$ index.php  
+RewriteCond %{QUERY_STRING} ^(.*)$
+RewriteRule ^post-([0-9]+)\.html$ article.php?id=$1&%1
+RewriteCond %{QUERY_STRING} ^(.*)$
+RewriteRule ^user-([0-9]+)\.html$ userpage.php?uid=$1&%1
+
+
+
+./mongoexport -d forum -c users -o 27017_5users.dat  /port 27017
+
+mongoimport /file:/www/wwwroot/jincheng/27017_5users.dat /port 27017 -d forum -c users
+
+"username" : "梦回","password" : "123456", "role" : "管理员","sex" : "男","create_time" : "2019-02-09 20:22:00","status" : 1,"isAdmin" : true
+
+
+
+TypeError: Cannot read property 'name' of undefined
+    at /www/wwwroot/jincheng/routers/api.js:35:27
+    at Layer.handle [as handle_request] (/www/wwwroot/jincheng/node_modules/express/lib/router/layer.js:95:5)
+    at next (/www/wwwroot/jincheng/node_modules/express/lib/router/route.js:137:13)
+    at Route.dispatch (/www/wwwroot/jincheng/node_modules/express/lib/router/route.js:112:3)
+    at Layer.handle [as handle_request] (/www/wwwroot/jincheng/node_modules/express/lib/router/layer.js:95:5)
+    at /www/wwwroot/jincheng/node_modules/express/lib/router/index.js:281:22
+    at Function.process_params (/www/wwwroot/jincheng/node_modules/express/lib/router/index.js:335:12)
+    at next (/www/wwwroot/jincheng/node_modules/express/lib/router/index.js:275:10)
+    at /www/wwwroot/jincheng/routers/api.js:21:3
+    at Layer.handle [as handle_request] (/www/wwwroot/jincheng/node_modules/express/lib/router/layer.js:95:5)
+    at trim_prefix (/www/wwwroot/jincheng/node_modules/express/lib/router/index.js:317:13)
+    at /www/wwwroot/jincheng/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/www/wwwroot/jincheng/node_modules/express/lib/router/index.js:335:12)
+    at next (/www/wwwroot/jincheng/node_modules/express/lib/router/index.js:275:10)
+    at Function.handle (/www/wwwroot/jincheng/node_modules/express/lib/router/index.js:174:3)
+    at router (/www/wwwroot/jincheng/node_modules/express/lib/router/index.js:47:12)
+\n\n\n","status":500,"statusText":"Internal Server Error"}
+
+
+创建管理员用户
+
+db.createUser({ user: "admin", pwd: "admin", roles: [{ role: "userAdminAnyDatabase", db: "admin" }] })
+
+创建root
+db.createUser({user: "root",pwd: "root", roles: [ { role: "root", db: "admin" } ]})
+
+设置数据库账号密码
+db.createUser({user: "menghui",pwd: "menghui",roles: [ { role: "dbOwner", db: "forum" } ]})
+
+
+
+
+wget http://nodejs.org/dist/v12.16.1/node-v12.16.1.tar.gz
+wget http://nodejs.org/dist/v10.13.0/node-v10.13.0.tar.gz
+C.
+解压缩源文件，并且进入到压缩后的文件夹中:
+tar zxf node-v10.13.0.tar.gz
+cd node-v10.13.0
+D.
+执行配置脚本来进行编译预处理:
+./configure
+E.
+开始编译源代码
+make
+F.
+当编译完成后，我们需要使之在系统范围内可用, 编译后的二进制文件将被放置到系统路径，默认情况下，Node二进制文件应该放在/user/local/bin/node文件夹下
+make install
+G.
+现在已经安装了Node.js, 可以开始部署应用程序。首先要使用Node.js的应用管理模块，pm2(用于启动程序并在需要时重启非常有用的模块）：
+npm -g install pm2
+H.
+建立超级链接, 不然 sudo node 时会报 "command not
+found"
+sudo ln -s /usr/local/bin/node /usr/bin/node
+sudo ln -s /usr/local/lib/node /usr/lib/node
+sudo ln -s /usr/local/bin/npm /usr/bin/npm
+sudo ln -s /usr/local/bin/node-waf /usr/bin/node-waf
+
+
+
+http://fastdl.mongodb.org/linux/mongodb-linux-x86_64-4.04.tgz
+
+/usr/local/mongodb/bin/mongod --dbpath=/var/mongodb/data --logpath /var/mongodb/logs/log.log --bind_ip=0.0.0.0 --fork
+
+
+/usr/local/mongodb/bin/mongod --dbpath=/var/mongodb/data --logpath /var/mongodb/logs/log.log --fork
+
+
+cd /home/admin sudo pm2 start app.js --name app
+
+
+
+MY_TENCENT_ID=AKIDPegU1HX4aqyETbqV7SWNzPYR3QVfMIkx
+MY_TENCENT_KEY=5OKTLvEI6cqpc9O7QZR1LPL7wXrviKkt
+ADMIN_REGISTER_TOKEN=OVSmbSQ1i7gaktNX1ygLhD4FmTKJGXBpBSK64rop1svqLJ94OtcdbtkY5M9yjwYpVfYPdewMny7uyd21NbBRhyOZdFCWKcy8bcU
+SECRET_USER_STRING=KhoUeXl9wqG5Z41EQwS3Xzakczj1M1CM35xfjmDLRNJAIGIqkKe
+ADMIN_ENCRY_STRING=VnoPsPxFBnpjJtCwI3hxRA07SQcXm19JAC6YaZkBt
+DATA_BASE_ADMIN_ACCOUNT=admin
+DATA_BASE_ADMIN_PASSWORD=sGpujmN9RRt^fcvn4gaAK@VU*KqN#cKz9A1J29g9P1
+DATA_BASE_SWEET_ACCOUNT=sweet
+DATA_BASE_SWEET_PASSWORD=sGpujmN9RRt^fcvn4gaA
+mongodb://sweet:sGpujmN9RRt^fcvn4gaA@127.0.0.1:27017/sweet
+
+db.createUser({ user: "admin", pwd: "sGpujmN9RRt^fcvn4gaAK@VU*KqN#cKz9A1J29g9P1", roles: [{ role: "userAdminAnyDatabase", db: "admin" }] })
+
+db.createUser({user: "menghui",pwd: "menghui",roles: [ { role: "dbOwner", db: "forum" } ]})
+
+
+导出数据库:
+1 users表
+./mongoexport -d forum -c users -o /home/users.json --type json -f field
+./mongoexport -d forum -c users -o /home/users.dat
+2 分类表
+./mongoexport -d forum -c categories -o /home/categories.json --type json -f field
+./mongoexport -d forum -c categories -o /home/categories.dat
+3 文章表
+./mongoexport -d forum -c articles -o /home/articles.json --type json -f field
+./mongoexport -d forum -c articles -o /home/articles.dat

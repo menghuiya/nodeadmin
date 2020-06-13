@@ -17,10 +17,11 @@
     <script src="/public/static/kj/element-ui/index.js"></script>
     <script src="/public/static/kj/jquery.min.js"></script>
     <script src="/public/static/kj/layer/layer.js"></script>
-    <!-- <script src="https://unpkg.com/wangeditor@3.1.1/release/wangEditor.min.js"></script> -->
-    <script src="/public/static/kj/wangeditor/wangEditor.js"></script>
+    <!-- <script src="/public/static/kj/wangeditor/wangEditor.js"></script> -->
     <script src="/public/static/sa.js"></script>
-    <script src=""></script>
+    <script src="/public/ueditor/ueditor.config.js"></script>
+    <script src="/public/ueditor/ueditor.all.min.js"></script>
+    <script src="/public/ueditor/lang/zh-cn/zh-cn.js"></script>
     <style>
       /* wang富文本编辑器 */
       .editor-item {
@@ -44,10 +45,6 @@
         padding-top: 5px !important;
       }
       /* 尽量小点 */
-      .editor-item .editor-box {
-        float: left;
-        width: 700px;
-      }
       .editor-item .editor-box img {
         max-width: 200px !important;
       }
@@ -67,17 +64,6 @@
       <div class="c-panel">
         <div class="c-title">文章编辑</div>
         <el-form size="mini" v-if="m">
-          <!-- <el-form-item label="文章分类：">
-            <el-select size="mini" v-model="m.type_id">
-              <el-option label="请选择" :value="0" disabled></el-option>
-              <el-option
-                v-for="type in typeList"
-                :label="type.name"
-                :value="type._id"
-                :key="type._id"
-              ></el-option>
-            </el-select>
-          </el-form-item> -->
           <el-form-item label="文章分类：">
             <el-cascader
               v-model="m.type"
@@ -106,7 +92,7 @@
           </el-form-item>
           <el-form-item label="文章内容：" class="editor-item">
             <div class="editor-box">
-              <div id="editor"></div>
+              <div id="editor" v-model="m.content"></div>
             </div>
           </el-form-item>
           <el-form-item label="是否隐藏：">
@@ -131,20 +117,10 @@
           <div style="margin-top: 10px;"></div>
         </el-form>
       </div>
-
-      <!-- 给wangEditor打一波广告 -->
-      <div class="c-panel" style="background-color: rgba(0, 0, 0, 0);">
-        wangEditor：<el-link
-          type="primary"
-          href="http://www.wangeditor.com/"
-          target="_blank"
-        >
-          基于javascript和css开发的 Web富文本编辑器， 轻量、简洁、易用、开源免费
-        </el-link>
-      </div>
     </div>
-    <!-- <script src="/public/monidata/article/data-list.js"></script> -->
     <script type="text/javascript">
+      var ue = UE.getEditor('editor');
+
       // 创建一个空的 m
       function create_m() {
         return {
@@ -156,75 +132,6 @@
           is_public: Number(`{{article.is_public}}`) || 1,
           type: `{{article.typearr}}`.split(',') || [],
         };
-      }
-      // 创建编辑器
-      function create_editor(content) {
-        var E = window.wangEditor;
-        window.editor = new E('#editor');
-
-        editor.customConfig.menus = [
-          'head',
-          'fontSize',
-          'fontName',
-          'italic',
-          'underline',
-          'strikeThrough',
-          'foreColor',
-          'backColor',
-          'link',
-          'list',
-          'justify',
-          'quote',
-          'emoticon',
-          'image',
-          'video', // 插入视频
-          'table',
-          'code',
-          'undo',
-          'redo', // 重复
-        ];
-        // editor.customConfig.debug = true; // debug模式
-        // editor.customConfig.uploadFileName = 'file'; // 图片流name
-        // editor.customConfig.withCredentials = true; // 跨域携带cookie
-        // editor.customConfig.uploadImgShowBase64 = true; // 使用 base64 保存图片
-        editor.customConfig.debug = true;
-        //配置上传图片的接口api
-        editor.customConfig.uploadImgServer = '/admin/upload';
-        //图片大小限制为 5M
-        editor.customConfig.uploadImgMaxSize = 5 * 1024 * 1024;
-        // 限制一次最多上传 10 张图片
-        editor.customConfig.uploadImgMaxLength = 10;
-        //配置文件参数名（这个参数必需配置，后台用这个值接收图片）
-        editor.customConfig.uploadFileName = 'file';
-        //隐藏网络图片tab
-        editor.customConfig.showLinkImg = false;
-        //设置上传图片的header
-        editor.customConfig.uploadImgHeaders = {
-          authorization: 'Bearer ' + localStorage.token,
-          enctype: 'multipart/form-data',
-        };
-        //监听函数在上传图片的不同阶段做相应处理
-        editor.customConfig.uploadImgHooks = {
-          success: function (xhr, editor, result) {
-            console.log('图片上传并返回结果,图片插入成功');
-          },
-          fail: function (xhr, editor, result) {
-            console.log('图片上传并返回结果，但图片插入错误');
-          },
-          error: function (xhr, editor) {
-            console.log('图片上传出错');
-          },
-          timeout: function (xhr, editor) {
-            console.log('图片上传超时');
-          },
-          customInsert: function (insertImg, result, editor) {
-            console.log(' 图片上传并返回结果');
-            var url = result.data;
-            insertImg(url);
-          },
-        };
-        editor.create(); // 创建
-        editor.txt.html(content); // 为编辑器赋值
       }
     </script>
     <script>
@@ -253,7 +160,7 @@
           ok: function () {
             // 开始增加或修改
 
-            this.m.content = editor.txt.html();
+            this.m.content = ue.getContent();
             if (this.art_id == '') {
               sa.ajax(
                 '/admin/sa-html/article/art-add',
@@ -263,7 +170,7 @@
                     '增加成功',
                     function () {
                       this.m = create_m();
-                      editor.txt.html(''); // 图文介绍
+                      ue.setContent(''); // 图文介绍
                     }.bind(this)
                   );
                 }.bind(this)
@@ -287,25 +194,27 @@
         },
         mounted: function () {
           // 如果是添加
-          if (this.art_id == '') {
-            create_editor(this.m.content); // 创建富文本编辑器
-          } else {
-            // id 非 0 代表 是要修改
-            // mockData.data.forEach(
-            //   function (item) {
-            //     if (item.id == this.id) {
-            //       this.m = item;
-            //     }
-            //   }.bind(this)
-            // );
-            create_editor(this.m.content); // 创建富文本编辑器
-          }
+          // if (this.art_id == '') {
+          //   create_editor(this.m.content); // 创建富文本编辑器
+          // } else {
+          //   // id 非 0 代表 是要修改
+          //   // mockData.data.forEach(
+          //   //   function (item) {
+          //   //     if (item.id == this.id) {
+          //   //       this.m = item;
+          //   //     }
+          //   //   }.bind(this)
+          //   // );
+          //   create_editor(this.m.content); // 创建富文本编辑器
+          // }
         },
         created: function () {
           this.f5();
+          setTimeout(() => {
+            ue.setContent(`{{article.content.toString()}}`);
+          }, 500);
         },
       });
-      console.log(`{{article.typearr}}`.split(','));
     </script>
   </body>
 </html>

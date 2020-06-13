@@ -15,6 +15,8 @@ let Cookies = require('cookies');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session); //持久化存储session
 const fs = require('fs');
+const ueditor = require('ueditor');
+const path = require('path');
 //创建app应用 =>nodejs http.createServer();
 let app = express();
 
@@ -102,7 +104,44 @@ app.use('/api', require('./routers/api'));
 app.use('/', require('./routers/main'));
 
 //文件上传
+app.use(
+  '/public/ueditor/ue',
+  ueditor(path.join(__dirname, '/'), function (req, res, next) {
+    var imgDir = '/public/artimg';
+    var ActionType = req.query.action;
 
+    if (
+      ActionType === 'uploadimage' ||
+      ActionType === 'uploadfile' ||
+      ActionType === 'uploadvideo'
+    ) {
+      var file_url = imgDir; //默认图片上传地址
+      // 这里你可以获得上传图片的信息
+      /*其他上传格式的地址*/
+      if (ActionType === 'uploadfile') {
+        file_url = '/public/file/'; //附件
+      }
+      if (ActionType === 'uploadvideo') {
+        file_url = '/public/video'; //视频
+      }
+      console.log(file_url);
+      res.ue_up(file_url); //你只要输入要保存的地址 。保存操作交给ueditor来做
+      res.setHeader('Content-Type', 'text/html');
+    }
+    //  客户端发起图片列表请求
+    else if (req.query.action === 'listimage') {
+      var dir_url = imgDir;
+      res.ue_list(dir_url); // 客户端会列出 dir_url 目录下的所有图片
+    }
+    // 客户端发起其它请求
+    else {
+      // console.log('config.json')
+      res.setHeader('Content-Type', 'application/json');
+      // res.redirect('/public/ueditor/jsp/config.json');
+      res.redirect('/public/ueditor/nodejs/config.json');
+    }
+  })
+);
 //监听http请求
 mongoose.connect('mongodb://menghui:menghui@127.0.0.1:27017/forum', function (
   err
