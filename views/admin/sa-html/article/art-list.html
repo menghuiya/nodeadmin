@@ -27,23 +27,13 @@
         <!-- 参数栏 -->
         <div class="c-title">检索参数</div>
         <el-form :inline="true" size="mini">
-          <el-form-item label="文章编号：">
-            <el-input v-model="p.id" type="number"></el-input>
-          </el-form-item>
           <el-form-item label="标题：">
-            <el-input v-model="p.title" placeholder="模糊查询"></el-input>
+            <el-input v-model="p.keyword" placeholder="模糊查询"></el-input>
           </el-form-item>
           <el-form-item style="min-width: 10px;">
-            <el-button type="primary" icon="el-icon-search" @click="f5"
+            <el-button type="primary" icon="el-icon-search" @click="f6"
               >查询</el-button
             >
-          </el-form-item>
-          <br />
-          <el-form-item label="综合排序：">
-            <el-radio-group v-model="p.sort_type">
-              <el-radio :label="0">发表时间</el-radio>
-              <el-radio :label="2">点击数</el-radio>
-            </el-radio-group>
           </el-form-item>
         </el-form>
         <!-- 数据列表 -->
@@ -112,6 +102,7 @@
             // 查询参数
             page: 1,
             limit: 10,
+            keyword: '', //关键词查询
           },
           dataCount: 0, // 数据总数
           dataList: [], // 数据集合
@@ -121,6 +112,17 @@
           f5: function () {
             sa.ajax(
               '/api/articles?user_id=' + `{{userInfo._id}}`,
+              this.p,
+              function (res) {
+                this.dataList = res.data; // 数据
+                this.dataCount = res.dataCount; // 分页
+              }.bind(this),
+              { type: 'get' }
+            );
+          },
+          f6() {
+            sa.ajax(
+              '/api/search?user_id=' + `{{userInfo._id}}`,
               this.p,
               function (res) {
                 this.dataList = res.data; // 数据

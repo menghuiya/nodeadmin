@@ -162,6 +162,78 @@ router.get('/article', function (req, res) {
   //获取post提交过来的名称
 });
 
+/**搜索文章接口 */
+router.get('/search', function (req, res) {
+  //获取文章_id
+  let keyword = req.query.keyword || '';
+  let user_id = req.query.user_id || '';
+  let page = Number(req.query.page || 1); //注意验证 是否为数字
+  let limit = Number(req.query.limit || 5); //注意验证 是否为数字 //限制条数
+  let search = new RegExp('^.*' + keyword + '.*$');
+  let where = {
+    title: search,
+  };
+
+  let getmsg = function (where) {
+    Article.count(where).then(function (count) {
+      //计算总页数
+      let pages = Math.ceil(count / limit);
+      //取值不能超过pages
+      page = Math.min(page, pages);
+      //取值不能小于1
+      page = Math.max(page, 1);
+      //限定上一页下一页取值
+      let skip = (page - 1) * limit;
+      /**
+       * 1升序
+       * -1降序
+       */
+      Article.find(
+        where,
+        //限制查询字段 忽略userID
+        { content: 0, description: 0, typearr: 0 }
+      )
+        .limit(limit)
+        .skip(skip)
+        .sort({ _id: -1 })
+        .populate({
+          path: 'category',
+          select: { name: 1, _id: 1 },
+        })
+        .populate({
+          path: 'user',
+          select: { username: 1, _id: 0 },
+        })
+        .populate({
+          path: 'update_user',
+          select: { username: 1, _id: 0 },
+        })
+        .then(function (articles) {
+          mockData = {
+            code: 200,
+            msg: 'ok',
+            data: articles,
+            dataCount: count,
+          };
+          // console.log(mockData);
+          res.json(mockData);
+        });
+    });
+  };
+  if (user_id) {
+    User.findOne({
+      _id: user_id,
+    }).then((userInfo) => {
+      if (!userInfo.isAdmin) {
+        where.user = user_id;
+      }
+      getmsg(where);
+    });
+  } else {
+    getmsg(where);
+  }
+});
+
 /**所有 以及级分类文章接口 */
 router.get('/articles', function (req, res) {
   let user_id = req.query.user_id || '';
