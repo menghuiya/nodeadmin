@@ -29,7 +29,7 @@ function add(data_typeid, body, callback) {
             title: '壁纸1',
             img_src:
               'https://color-test.oss-cn-qingdao.aliyuncs.com/sa-admin/32.jpg',
-            link: 'https://www.52mhzy.cn',
+            link: 'https://www.xxxx.com',
             content: '这里是内容哦,可以修改',
             is_update: false,
           },

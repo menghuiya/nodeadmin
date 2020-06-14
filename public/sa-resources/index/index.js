@@ -3,7 +3,7 @@ var homeTab = {
   id: 'home', // 唯一标识
   name: '首页',
   url: '/admin/main', // 页面地址
-  hide_close: true // 隐藏关闭键
+  hide_close: true, // 隐藏关闭键
 };
 
 // sa_admin对象
@@ -35,7 +35,7 @@ var sa_admin = new Vue({
       // 卡片标题右键菜单的样式
       left: '0px', // 坐标x
       top: '0px', // 坐标y
-      maxHeight: '0px' // 右键菜单的最高高度 (控制是否展开)
+      maxHeight: '0px', // 右键菜单的最高高度 (控制是否展开)
     },
     is_drag: false, // 当前是否正在拖拽
     dragTab: null, // 当前正在拖拽的tab
@@ -51,7 +51,7 @@ var sa_admin = new Vue({
       { name: '滑动', value: 'slide' },
       { name: '方块', value: 'cube' },
       { name: '3D流', value: 'coverflow' },
-      { name: '3D翻转', value: 'flip' }
+      { name: '3D翻转', value: 'flip' },
     ],
     themeV: '', // 当前主题值
     themeList: [
@@ -63,18 +63,18 @@ var sa_admin = new Vue({
       { name: '灰色-展开', value: '5', show_all: true },
       { name: 'pro钛合金', value: '6', show_all: false },
       { name: '沉淀式黑蓝', value: '7', show_all: false },
-      { name: '简约式灰蓝', value: '8', show_all: false }
+      { name: '简约式灰蓝', value: '8', show_all: false },
     ],
     themeToggling: false, // 主题是否正在切换
     dropList: [], // 头像处下拉列表菜单
     mySwiper: null, // swiper相关
     is_show_tabbar: true, // 是否显示tab栏
     breMenuList: [homeTab], // 面包屑导航栏的tab数据
-    is_reme_open: true // 是否记住上一次最后打开的窗口
+    is_reme_open: true, // 是否记住上一次最后打开的窗口
   },
   watch: {
     // 监听全屏动作
-    is_full_screen: function(newValue, oldValue) {
+    is_full_screen: function (newValue, oldValue) {
       if (newValue) {
         sa_admin_code_util.fullScreen();
       } else {
@@ -82,22 +82,22 @@ var sa_admin = new Vue({
       }
     },
     // 监听title改变时, 页面title也跟着切换
-    title: function(newValue, oldValue) {
+    title: function (newValue, oldValue) {
       document.querySelector('title').innerHTML = newValue;
     },
     // 监听 icon_url 网页图标
-    icon_url: function(newValue, oldValue) {
+    icon_url: function (newValue, oldValue) {
       var icon_url = newValue;
       var icon_target = document.querySelector('.admin-icon');
       if (icon_target) {
         icon_target.setAttribute('href', icon_url);
       }
-    }
+    },
   },
   methods: {
     // ------------------- 初始化相关 --------------------
     // 初始化模板, 此方法只可调用一次
-    init: function(option) {
+    init: function (option) {
       // 如果不填写
       option = option || {};
 
@@ -131,12 +131,12 @@ var sa_admin = new Vue({
     },
     // ------------------- 对外预留接口 --------------------
     // show_list 为指定显示的id集合(注意是id的集合)，为空时代表显示所有
-    initMenu: function(show_list) {
+    initMenu: function (show_list) {
       this.setMenuList(window.menuList, show_list);
     },
     // 写入菜单，可以是一个一维数组(指定好parent_id)，也可以是一个已经渲染好的tree数组
     // show_list 为指定显示的id集合(注意是id的集合)，为空时代表显示所有
-    setMenuList: function(menu_list, show_list) {
+    setMenuList: function (menu_list, show_list) {
       // 转化为string 便于比较
       if (show_list) {
         for (var i = 0; i < show_list.length; i++) {
@@ -148,7 +148,7 @@ var sa_admin = new Vue({
       this.menuList = menu_list;
     },
     // 将一维平面数组转换为 Tree 菜单 (根据其指定的parent_id添加到其父菜单的childList)
-    arrayToTree: function(menu_list) {
+    arrayToTree: function (menu_list) {
       for (var i = 0; i < menu_list.length; i++) {
         var menu = menu_list[i];
         // 添加到其指定的父菜单的childList
@@ -165,7 +165,7 @@ var sa_admin = new Vue({
       return menu_list;
     },
     // 将 menu_list 处理一下
-    refMenuList: function(menu_list, show_list, parent_id) {
+    refMenuList: function (menu_list, show_list, parent_id) {
       for (var i = 0; i < menu_list.length; i++) {
         var menu = menu_list[i];
         menu.is_show = menu.is_show === false ? false : true;
@@ -192,7 +192,7 @@ var sa_admin = new Vue({
     },
     // ------------------- 对外预留 end --------------------
     // 打开所有菜单的折叠
-    show_all_menu: function() {
+    show_all_menu: function () {
       var default_openeds = [];
       for (var i = 0; i < this.menuList.length; i++) {
         default_openeds.push(this.menuList[i].id);
@@ -205,11 +205,11 @@ var sa_admin = new Vue({
       this.default_openeds = default_openeds;
     },
     // 切换主题
-    toggleTheme: function(command) {
+    toggleTheme: function (command) {
       // 调整动画，避免卡顿
       this.themeToggling = true;
       setTimeout(
-        function() {
+        function () {
           this.themeToggling = false;
         }.bind(this),
         1000
@@ -236,34 +236,34 @@ var sa_admin = new Vue({
       }
     },
     // 切换翻页方式
-    toggleSwitch: function(command) {
+    toggleSwitch: function (command) {
       this.switchV = command + '';
       localStorage.setItem('switchV', command);
 
       this.$confirm('此动画效果将在您刷新页面之后生效，是否立即刷新？', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
       })
-        .then(function() {
+        .then(function () {
           location.reload();
         })
-        .catch(function() {});
+        .catch(function () {});
     },
     // 处理userinfo的下拉点击
-    handleCommand: function(command) {
-      this.dropList.forEach(function(drop) {
+    handleCommand: function (command) {
+      this.dropList.forEach(function (drop) {
         if (drop.name == command) {
           drop.click();
         }
       });
     },
     // 退出登录
-    login_out: function() {
+    login_out: function () {
       console.log('退出登录');
     },
     // 折叠菜单
-    fold_start: function() {
+    fold_start: function () {
       this.is_fold_right = true;
       this.updateSlideSize(100); // swipre重新计算大小
       // 如果打开的 iframe 在五个以内  浏览器压力很小 就立刻展开菜单，
@@ -272,7 +272,7 @@ var sa_admin = new Vue({
         this.is_fold = true;
       } else {
         setTimeout(
-          function() {
+          function () {
             this.is_fold = true;
           }.bind(this),
           100
@@ -280,11 +280,11 @@ var sa_admin = new Vue({
       }
     },
     // 展开菜单
-    fold_end: function() {
+    fold_end: function () {
       this.is_fold = false;
       // 延时200ms执行，让它没那么卡
       setTimeout(
-        function() {
+        function () {
           this.is_fold_right = false;
           this.updateSlideSize(); // swipre重新计算大小
         }.bind(this),
@@ -292,7 +292,7 @@ var sa_admin = new Vue({
       );
     },
     // 刷新一下面包屑导航栏
-    f5_breMenuList: function() {
+    f5_breMenuList: function () {
       // 如果非单窗口模式, 则不刷新了,  节省cpu
       if (this.is_show_tabbar) {
         return;
@@ -317,56 +317,56 @@ var sa_admin = new Vue({
     },
     // ------------------- tab 右键菜单相关 --------------------
     // 显示右键菜单
-    right_showMenu: function(tab, event) {
+    right_showMenu: function (tab, event) {
       this.rightTab = tab; // 绑定操作tab
       var e = event || window.event;
       this.rightStyle.left = e.clientX + 1 + 'px'; // 设置给坐标x
       this.rightStyle.top = e.clientY + 'px'; // 设置给坐标y
       this.rightShow = true; // 显示右键菜单
-      this.$nextTick(function() {
+      this.$nextTick(function () {
         var foxHeight = document.querySelector('.right-box-2').offsetHeight; // 应该展开多高
         this.rightStyle.maxHeight = foxHeight + 'px'; // 展开
         document.querySelector('.right-box').focus(); // 获得焦点,以被捕获失去焦点事件
       });
     },
     // 关闭右键菜单 - 立即关闭
-    right_closeMenu: function() {
+    right_closeMenu: function () {
       this.rightStyle.maxHeight = '0px';
       this.rightShow = false;
     },
     // 关闭右键菜单 - 带动画折叠关闭 (失去焦点和点击取消时调用, 为什么不全部调用这个? 因为其它时候调用这个都太卡了)
-    right_closeMenu2: function() {
+    right_closeMenu2: function () {
       this.rightStyle.maxHeight = '0px';
       // this.rightShow = false;
     },
     // 右键 刷新
-    right_f5: function() {
+    right_f5: function () {
       this.showTab(this.rightTab); // 先转到
       var cs = '#iframe-' + this.rightTab.id;
       var iframe = document.querySelector(cs);
       iframe.setAttribute('src', this.getTabUrl(this.rightTab));
     },
     // 右键 复制
-    right_copy: function() {
+    right_copy: function () {
       this.showTab({
         id: new Date().getTime(),
         name: this.rightTab.name,
-        url: this.getTabUrl(this.rightTab)
+        url: this.getTabUrl(this.rightTab),
       });
     },
     // 右键 悬浮
-    right_xf: function() {
+    right_xf: function () {
       if (this.rightTab.id == this.homeTab.id + '') {
         this.$message({
           message: '这个不能悬浮哦，换个卡片试试吧',
-          type: 'warning'
+          type: 'warning',
         });
         return;
       }
       // 先关闭
       this.closeTab(
         this.rightTab,
-        function() {
+        function () {
           this.f5_breMenuList();
         }.bind(this)
       );
@@ -382,46 +382,46 @@ var sa_admin = new Vue({
         zIndex: layer.zIndex,
         content: this.getTabUrl(this.rightTab),
         // 解决拉伸或者最大化的时候，iframe高度不能自适应的问题
-        resizing: function(layero) {
+        resizing: function (layero) {
           sa_admin_code_util.solveLayerBug(index);
         },
         // 操作这个layer的时候置顶它
-        success: function(layero) {
+        success: function (layero) {
           layer.setTop(layero);
-        }
+        },
       });
       // 解决拉伸或者最大化的时候，iframe高度不能自适应的问题
       document.querySelector(
         '#layui-layer' + index + ' .layui-layer-max'
-      ).onclick = function() {
-        setTimeout(function() {
+      ).onclick = function () {
+        setTimeout(function () {
           sa_admin_code_util.solveLayerBug(index);
         }, 200);
       };
     },
     // 右键 - 关闭
-    right_close: function() {
+    right_close: function () {
       if (this.rightTab.id == this.homeTab.id + '') {
         this.$message({
           message: '这个不能关闭哦',
-          type: 'warning'
+          type: 'warning',
         });
         return; // 隐藏右菜单
       }
       this.closeTab(
         this.rightTab,
-        function() {
+        function () {
           this.f5_breMenuList();
         }.bind(this)
       );
     },
     // 右键 - 关闭其它
-    right_close_other: function() {
+    right_close_other: function () {
       // 先滑到最左边
       this.scrollX = 0;
       // 递归删除
       var i = 0;
-      var deleteFn = function() {
+      var deleteFn = function () {
         // 如果已经遍历全部
         if (i >= this.tabList.length) {
           return;
@@ -435,7 +435,7 @@ var sa_admin = new Vue({
           i++;
           deleteFn();
         } else {
-          this.closeTab(tab, function() {
+          this.closeTab(tab, function () {
             deleteFn();
           });
         }
@@ -443,12 +443,12 @@ var sa_admin = new Vue({
       deleteFn();
     },
     // 右键 - 关闭所有
-    right_close_all: function() {
+    right_close_all: function () {
       // 先滑到最左边
       this.scrollX = 0;
       // 递归删除
       var i = 0;
-      var deleteFn = function() {
+      var deleteFn = function () {
         // 如果已经遍历全部
         if (i >= this.tabList.length) {
           this.f5_breMenuList();
@@ -460,7 +460,7 @@ var sa_admin = new Vue({
           i++;
           deleteFn();
         } else {
-          this.closeTab(tab, function() {
+          this.closeTab(tab, function () {
             deleteFn();
           });
         }
@@ -468,11 +468,11 @@ var sa_admin = new Vue({
       deleteFn();
     },
     // 右键 - 新窗口打开
-    right_window_open: function() {
+    right_window_open: function () {
       open(this.getTabUrl(this.rightTab));
     },
     // 获取指定tab所代表iframe的url地址 (同域下可获取最新地址, 跨域时只能获取初始化时的地址)
-    getTabUrl: function(tab) {
+    getTabUrl: function (tab) {
       var cs = '#iframe-' + tab.id;
       var iframe = document.querySelector(cs);
       try {
@@ -485,21 +485,21 @@ var sa_admin = new Vue({
     // ------------------- menu 相关 --------------------
     // 点击子菜单时的回调,
     // 参数: 点击菜单index标识（不是下标）, 所有已经打开的菜单 index
-    selectMenu: function(index, indexArray) {
+    selectMenu: function (index, indexArray) {
       var menu = this.getMenuById(this.menuList, index);
       if (menu != null) {
         this.showTab(menu);
       }
     },
     // js显示某个菜单
-    showMenuById: function(id) {
+    showMenuById: function (id) {
       var menu = this.getMenuById(this.menuList, id);
       if (menu) {
         this.showTab(menu);
       }
     },
     // 返回指定 index 的menu
-    getMenuById: function(menuList, id) {
+    getMenuById: function (menuList, id) {
       for (var i = 0; i < menuList.length; i++) {
         var menu = menuList[i];
         if (menu.id + '' == id + '') {
@@ -516,27 +516,27 @@ var sa_admin = new Vue({
       return null;
     },
     // 显示homeTab
-    showHome: function() {
+    showHome: function () {
       this.showTab(this.homeTab);
     },
 
     // ------------------- tab title 相关 --------------------
     // 关闭tab - 无动画版本
-    closeTab_not_an: function(tab) {
+    closeTab_not_an: function (tab) {
       // 根据没有地方调用这个方法, 所以先不写了嘻嘻
     },
     // 关闭页面
-    closeTab: function(tab, callFn) {
+    closeTab: function (tab, callFn) {
       // 执行关闭动画
       var div = document.querySelector('#tab-' + tab.id);
       div.style.width = div.offsetWidth + 'px';
-      setTimeout(function() {
+      setTimeout(function () {
         div.style.width = '0px';
       }, 0);
 
       // 等待动画结束
       setTimeout(
-        function() {
+        function () {
           // 如果tab为当前正在显示的tab, 则先不让它显示
           if (tab == this.nativeTab) {
             var index = this.tabList.indexOf(tab);
@@ -548,7 +548,7 @@ var sa_admin = new Vue({
           this.deleteSlide(tab.id);
           // 如果有回调
           if (callFn) {
-            this.$nextTick(function() {
+            this.$nextTick(function () {
               callFn();
             });
           }
@@ -557,20 +557,20 @@ var sa_admin = new Vue({
       );
     },
     // js关闭某个tab, 根据id
-    closeTabById: function(id, callFn) {
+    closeTabById: function (id, callFn) {
       var tab = this.getTabById(id);
       if (tab) {
         this.closeTab(tab, callFn);
       }
     },
     // 添加一个Tab  {id,name,url}
-    addTab: function(tab) {
+    addTab: function (tab) {
       tab.is_have_en = this.is_have_en(tab.name); // 有英文字母的不能加字体加粗动画, 因为会影响tab选项卡的width尺寸, 造成动画混乱
       this.tabList.push(tab);
       this.addSlide(tab);
     },
     // 显示某个页面  (如果不存在, 则先添加)
-    showTab: function(tab) {
+    showTab: function (tab) {
       // 如果是外部链接
       if (tab.is_blank) {
         return open(tab.url);
@@ -588,7 +588,7 @@ var sa_admin = new Vue({
         this.addTab(tab);
       }
       // 然后显示
-      this.$nextTick(function() {
+      this.$nextTick(function () {
         this.gotoSlide(tab.id);
         // 如果是无tabbar模式
         if (!this.is_show_tabbar) {
@@ -604,20 +604,20 @@ var sa_admin = new Vue({
 
       // 归位一下
       this.$nextTick(
-        function() {
+        function () {
           this.scrollToAuto();
         }.bind(this)
       );
     },
     // 显示一个选项卡, 根据 id , 不存在则不显示
-    showTabById: function(id) {
+    showTabById: function (id) {
       var tab = this.getTabById(id);
       if (tab) {
         this.showTab(tab);
       }
     },
     // 获取 Tab 根据 id
-    getTabById: function(id) {
+    getTabById: function (id) {
       for (var i = 0; i < this.tabList.length; i++) {
         if (this.tabList[i].id + '' == id + '') {
           return this.tabList[i];
@@ -626,42 +626,42 @@ var sa_admin = new Vue({
       return null;
     },
     // 双击tab栏空白处, 打开弹窗添加窗口
-    atOpen: function(e) {
+    atOpen: function (e) {
       window.r_layer_12345 = layer.open({
         type: 1,
         shade: 0.5,
         title: '添加新窗口', //不显示标题
         content: $('.at-form-dom'), //捕获的元素
-        cancel: function() {}
+        cancel: function () {},
       });
     },
     // 根据表单添加新窗口
-    atOk: function() {
+    atOk: function () {
       if (this.atTitle == '' || this.atUrl == '') {
         return;
       }
       this.showTab({
         id: new Date().getTime(),
         name: this.atTitle,
-        url: this.atUrl
+        url: this.atUrl,
       });
       layer.close(window.r_layer_12345);
       this.atTitle = '';
       this.atUrl = '';
     },
     // 返回一个字符串中是否有英文字母
-    is_have_en: function(str) {
+    is_have_en: function (str) {
       var reg = /[a-z]/i;
       return reg.test(str); //true,说明有英文字母
     },
     // ------------------- tab左右滑动  --------------------
     // 视角向左滑动一段距离
-    scrollToLeft: function() {
+    scrollToLeft: function () {
       var width = document.querySelector('.nav-right-2').clientWidth; // 视角宽度
       this.scrollX += width / 2; // 视角向左滑动一段距离
       // 越界检查
       setTimeout(
-        function() {
+        function () {
           if (this.scrollX > 0) {
             this.scrollX = 0;
           }
@@ -670,14 +670,14 @@ var sa_admin = new Vue({
       );
     },
     // 视角向右滑动一段距离
-    scrollToRight: function() {
+    scrollToRight: function () {
       var width = document.querySelector('.nav-right-2').clientWidth; // 视角宽度
       var tabListWidth = document.querySelector('.tab-title-box').clientWidth; // title总盒子宽度
       var rightLimit = 0 - tabListWidth + width / 2; // 右滑的极限
       this.scrollX -= width / 2; // 视角向右滑动一段距离
       // 越界检查
       setTimeout(
-        function() {
+        function () {
           if (this.scrollX < rightLimit) {
             this.scrollX = rightLimit;
           }
@@ -690,7 +690,7 @@ var sa_admin = new Vue({
       );
     },
     // 自动归位
-    scrollToAuto: function() {
+    scrollToAuto: function () {
       // console.log('自动归位=========');
       try {
         // 最后一个不用归位了
@@ -714,7 +714,7 @@ var sa_admin = new Vue({
     },
     // ------------------- tab拖拽相关 --------------------
     // 在 某个tab上被松开  -->  重新排序   ( 函数未完成 )
-    tab_ondrop: function(tab) {
+    tab_ondrop: function (tab) {
       /**
        * 写到一半发现,这看似简单的一个功能, 实则复杂无比
        * 首先tab卡交换顺序, 算法就已经比较复杂, 同时为了不显着生硬,还要加上:
@@ -743,7 +743,7 @@ var sa_admin = new Vue({
     },
     // ------------------- 锚链接路由相关 --------------------
     // 根据锚链接, 打开窗口
-    showTabByHash: function() {
+    showTabByHash: function () {
       // 如果非记住模式
       if (this.is_reme_open == false) {
         return;
@@ -770,7 +770,7 @@ var sa_admin = new Vue({
       // 以后如果有强需求这个功能时, 再实现
     },
     // 根据当前tab刷新一下锚链接
-    f5HashByNativeTab: function() {
+    f5HashByNativeTab: function () {
       // 如果非记住模式
       if (this.is_reme_open == false) {
         return;
@@ -779,14 +779,14 @@ var sa_admin = new Vue({
     },
     // ------------------- swiper相关 --------------------
     // 初始化swiper
-    initSwiper: function(switchV) {
+    initSwiper: function (switchV) {
       this.mySwiper = new Swiper('.swiper-container', {
         autoplay: false, // 可选选项，自动滑动
-        effect: switchV
+        effect: switchV,
       });
     },
     // 根据tab追加一个slide
-    addSlide: function(tab) {
+    addSlide: function (tab) {
       var onloadFn = "onload_iframe('" + tab.id + "')"; // iframe在onload后调用的函数
       var slide =
         '<div class="swiper-slide" id="slide-' +
@@ -803,7 +803,7 @@ var sa_admin = new Vue({
       this.mySwiper.appendSlide(slide);
     },
     // 获取指定slide的索引, 根据id
-    getSlideIndexById: function(id) {
+    getSlideIndexById: function (id) {
       var iframe = document.querySelector('#iframe-' + id);
       if (iframe != null) {
         // 获取其所在slide的索引
@@ -817,24 +817,24 @@ var sa_admin = new Vue({
       return -1;
     },
     // 删除slide,  根据指定iframe的id
-    deleteSlide: function(id) {
+    deleteSlide: function (id) {
       var slideIndex = this.getSlideIndexById(id);
       if (slideIndex != -1) {
         this.mySwiper.removeSlide(slideIndex);
       }
     },
     // 切换到指定的slide, 根据id
-    gotoSlide: function(id) {
+    gotoSlide: function (id) {
       var slideIndex = this.getSlideIndexById(id);
       if (slideIndex != -1) {
         this.mySwiper.slideTo(slideIndex, 300);
       }
     },
     // 更正slide大小 ms = 延时毫秒数
-    updateSlideSize: function(ms) {
+    updateSlideSize: function (ms) {
       ms = ms || 1;
       setTimeout(
-        function() {
+        function () {
           this.mySwiper.update(); // swipre重新计算大小
         }.bind(this),
         ms
@@ -842,7 +842,7 @@ var sa_admin = new Vue({
     },
     // ------------------- 杂七杂八 --------------------
     // 打开便签
-    openNote: function() {
+    openNote: function () {
       var w = document.body.clientWidth * 0.4 + 'px';
       var h = document.body.clientHeight * 0.6 + 'px';
       var default_content =
@@ -855,52 +855,39 @@ var sa_admin = new Vue({
           formType: 2,
           area: [w, h],
           btn: ['保存'],
-          maxlength: 99999999
+          maxlength: 99999999,
         },
-        function(pass, index) {
+        function (pass, index) {
           layer.close(index);
         }
       );
       var se = '#layui-layer' + index + ' .layui-layer-input';
       var d = document.querySelector(se);
-      d.oninput = function() {
+      d.oninput = function () {
         localStorage.setItem('sa_admin_note', this.value);
       };
     },
     // 弹窗
-    msg: function(msg) {
+    msg: function (msg) {
       layer.msg(msg);
     },
     // 打印版本
-    printVesion: function() {
-      console.log(
-        '欢迎使用sa-admin，当前版本：' +
-          this.version +
-          '，更新于：' +
-          this.update_time +
-          '，GitHub地址：' +
-          this.github_url
-      );
-      console.log(
-        '如在使用中发现任何bug或者疑问，请加入QQ群交流：782974737，点击加入：' +
-          'https://jq.qq.com/?_wv=1027&k=5DHN5Ib'
-      );
-    },
+    printVesion: function () {},
     // 获取指定tab栏的window对象, 用于多窗口通信
-    getTabWindow: function(tab_id) {
+    getTabWindow: function (tab_id) {
       var iframe = document.querySelector('#iframe-' + tab_id);
       if (iframe != null) {
         return iframe.contentWindow;
       }
       return null;
-    }
+    },
   },
-  created: function() {}
+  created: function () {},
 });
 // var sp = sa_admin;	// 兼容原有方案
 
 // iframe加载完毕后清除其背景loading图标
-window.onload_iframe = function(iframe_id) {
+window.onload_iframe = function (iframe_id) {
   // console.log(iframe_id);
   var iframe = document.querySelector('#iframe-' + iframe_id);
   if (iframe != null) {
@@ -909,7 +896,7 @@ window.onload_iframe = function(iframe_id) {
 };
 
 // 监听窗口大小变动
-window.onresize = function() {
+window.onresize = function () {
   if (document.body.clientWidth < 800) {
     sa_admin.fold_start();
   } else {
@@ -918,13 +905,13 @@ window.onresize = function() {
 };
 
 // 监听锚链接变动
-window.onhashchange = function() {
+window.onhashchange = function () {
   // console.log('锚链接变动了');
   sa_admin.showTabByHash();
 };
 
 // 一直更新时间
-setInterval(function() {
+setInterval(function () {
   var da = new Date();
   var Y = da.getFullYear(); //年
   var M = da.getMonth() + 1; //月
