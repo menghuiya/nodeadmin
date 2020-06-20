@@ -26,7 +26,7 @@
       <div class="c-panel">
         <!-- 参数栏 -->
         <div class="c-title">检索参数</div>
-        <el-form :inline="true" size="mini">
+        <el-form :inline="true" size="mini" @submit.native.prevent>
           <el-form-item label="标题：">
             <el-input v-model="p.keyword" placeholder="模糊查询"></el-input>
           </el-form-item>

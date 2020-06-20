@@ -21,6 +21,25 @@ function findAll(tag, callback) {
     }
   });
 }
+//搜索附件
+function searchAll(keyword, callback) {
+  fs.readFile('./json/enclosure.json', (err, data) => {
+    let o_data = JSON.parse(data);
+    let o_datarr = o_data.data;
+    let n_datarr = [];
+    if (keyword) {
+      for (let item of o_datarr) {
+        if (item.name.indexOf(keyword) != -1) {
+          n_datarr.push(item);
+        }
+      }
+      o_data.data = n_datarr;
+      callback(err, o_data);
+    } else {
+      callback(err, o_data);
+    }
+  });
+}
 //添加附件
 function add(body, callback) {
   fs.readFile('./json/enclosure.json', (err, data) => {
@@ -109,4 +128,4 @@ function update(body, callback) {
     );
   });
 }
-module.exports = { findAll, add, edit, remove, update };
+module.exports = { findAll, add, edit, remove, update, searchAll };

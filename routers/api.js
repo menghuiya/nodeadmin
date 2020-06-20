@@ -434,16 +434,30 @@ router.get('/jsondata', (req, res) => {
 /**附件文件数据接口 */
 router.get('/ensdatalist', (req, res) => {
   let tag = req.query.tag || '';
-  Enclosure.findAll(tag, (err, data) => {
-    if (err) {
-      res.json({
-        code: 500,
-        msg: '暂无文件数据',
-      });
-    } else {
-      res.json(data);
-    }
-  });
+  let keyword = req.query.keyword || '';
+  if (keyword) {
+    Enclosure.searchAll(keyword, (err, data) => {
+      if (err) {
+        res.json({
+          code: 500,
+          msg: '暂无文件数据',
+        });
+      } else {
+        res.json(data);
+      }
+    });
+  } else {
+    Enclosure.findAll(tag, (err, data) => {
+      if (err) {
+        res.json({
+          code: 500,
+          msg: '暂无文件数据',
+        });
+      } else {
+        res.json(data);
+      }
+    });
+  }
 });
 
 module.exports = router;

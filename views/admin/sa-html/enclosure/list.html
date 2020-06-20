@@ -61,6 +61,17 @@
     <div style="margin-top: -1em;"><br /></div>
     <div class="vue-box" style="display: none;" :style="'display: block;'">
       <div class="c-panel">
+        <div class="c-title">检索参数</div>
+        <el-form :inline="true" size="mini" @submit.native.prevent>
+          <el-form-item label="标题：">
+            <el-input v-model="p.keyword" placeholder="模糊查询"></el-input>
+          </el-form-item>
+          <el-form-item style="min-width: 10px;">
+            <el-button type="primary" icon="el-icon-search" @click="f5"
+              >查询</el-button
+            >
+          </el-form-item>
+        </el-form>
         <!-- 数据栏 -->
         <div class="c-title">数据列表</div>
         <el-table class="data-table" :data="dataList" size="mini">
@@ -151,6 +162,7 @@
             // 查询参数
             page: 1,
             limit: 10,
+            keyword: '',
           },
           dataCount: 100,
           dataList: [], // 数据集合
@@ -168,9 +180,9 @@
           f5: function () {
             sa.ajax(
               '/api/ensdatalist',
+              { keyword: this.p.keyword },
               function (res) {
                 let dataarr = res.data; // 数据
-
                 let skipNum = (this.p.page - 1) * this.p.limit;
                 let newArr =
                   skipNum + this.p.limit >= dataarr.length
